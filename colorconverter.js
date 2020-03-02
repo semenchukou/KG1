@@ -83,7 +83,7 @@ var colorconv = {
       if(x >= 0.008856) {
         return Math.cbrt(x);
       } else {
-        return 7.787 * x + 16 / 116;
+        return 7.787 * x + (16 / 116);
       }
     },
 
@@ -91,7 +91,7 @@ var colorconv = {
       if(Math.pow(x, 3) >= 0.008856) {
         return Math.pow(x, 3);
       } else {
-        return (x - 16 / 116) / 7.787;
+        return (x - (16 / 116)) / 7.787;
       }
     },
 
@@ -117,8 +117,8 @@ var colorconv = {
       var y;
       var z;
       y = colorconv.LAB2XYZFUNC((l + 16) / 116) * 95.047;
-      x = colorconv.LAB2XYZFUNC(a / 500 + ((l + 16) / 116)) * 100;
-      z = colorconv.LAB2XYZFUNC(((l + 16) / 116) - b / 200) * 108.883;
+      x = colorconv.LAB2XYZFUNC((a / 500) + ((l + 16) / 116)) * 100;
+      z = colorconv.LAB2XYZFUNC(((l + 16) / 116) - (b / 200)) * 108.883;
       return [x, y, z];
     },
 
@@ -151,5 +151,49 @@ var colorconv = {
         return false;
       }
       return [r, g, b];
-    }
+    },
+
+    LAB2RGB : function(labParams) {
+      let y = (labParams[0] + 16) / 116,
+      x = labParams[1] / 500 + y,
+      z = y - labParams[2] / 200,
+      r, g, b;
+
+      x = 0.95047 * ((x * x * x > 0.008856) ? x * x * x : (x - 16/116) / 7.787);
+      y = 1.00000 * ((y * y * y > 0.008856) ? y * y * y : (y - 16/116) / 7.787);
+      z = 1.08883 * ((z * z * z > 0.008856) ? z * z * z : (z - 16/116) / 7.787);
+  
+      r = x *  3.2406 + y * -1.5372 + z * -0.4986;
+      g = x * -0.9689 + y *  1.8758 + z *  0.0415;
+      b = x *  0.0557 + y * -0.2040 + z *  1.0570;
+  
+      r = (r > 0.0031308) ? (1.055 * Math.pow(r, 1/2.4) - 0.055) : 12.92 * r;
+      g = (g > 0.0031308) ? (1.055 * Math.pow(g, 1/2.4) - 0.055) : 12.92 * g;
+      b = (b > 0.0031308) ? (1.055 * Math.pow(b, 1/2.4) - 0.055) : 12.92 * b;
+  
+      return [Math.trunc(Math.max(0, Math.min(1, r)) * 255), 
+              Math.trunc(Math.max(0, Math.min(1, g)) * 255), 
+              Math.trunc(Math.max(0, Math.min(1, b)) * 255)]
+  },
+
+  RGB2LAB : function(rgbParams) {
+      let r = rgbParams[0] / 255,
+      g = rgbParams[1] / 255,
+      b = rgbParams[2] / 255,
+      x, y, z;
+
+      r = (r > 0.04045) ? Math.pow((r + 0.055) / 1.055, 2.4) : r / 12.92;
+      g = (g > 0.04045) ? Math.pow((g + 0.055) / 1.055, 2.4) : g / 12.92;
+      b = (b > 0.04045) ? Math.pow((b + 0.055) / 1.055, 2.4) : b / 12.92;
+  
+      x = (r * 0.4124 + g * 0.3576 + b * 0.1805) / 0.95047;
+      y = (r * 0.2126 + g * 0.7152 + b * 0.0722) / 1.00000;
+      z = (r * 0.0193 + g * 0.1192 + b * 0.9505) / 1.08883;
+  
+      x = (x > 0.008856) ? Math.pow(x, 1/3) : (7.787 * x) + 16/116;
+      y = (y > 0.008856) ? Math.pow(y, 1/3) : (7.787 * y) + 16/116;
+      z = (z > 0.008856) ? Math.pow(z, 1/3) : (7.787 * z) + 16/116;
+  
+      return [(116 * y) - 16, 500 * (x - y), 200 * (y - z)]
+  }
   };

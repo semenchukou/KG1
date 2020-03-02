@@ -18,21 +18,20 @@ h1{position:relative;top:-50px;font-family:"Helvetica Neue";margin-bottom:-40px;
       return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    function notif(type){
-      var notification = new Notification('Out of the borders',
-      { body: type, dir: 'auto' });
-    }
-
     function checkValues(lab, xyz, cmyk){
       if(lab[0] > 100 || lab[0] < 0 || lab[1] > 127 || lab[1] < -128 || lab[2] > 127 || lab[2] < -128){
-        notif("lab");
+        alert('lab out of the borders');
+        return false;
       }
-      if(xyz[0] > 0.9252 || xyz[0] < 0 || xyz[1] > 1 || xyz[1] < 0 || xyz[2] > 0.8252 || xyz[2] < 0){
-        notif("xyz");
+      if(xyz[0] > 0.9252 || xyz[0] < 0 || xyz[1] > 1.0 || xyz[1] < 0 || xyz[2] > 0.8252 || xyz[2] < 0){
+        alert('xyz out of the borders');
+        return false;
       }
       if(cmyk[0] > 255 || cmyk[0] < 0 || cmyk[1] > 255 || cmyk[1] < 0 || cmyk[2] > 255 || cmyk[2] < 0 || cmyk[3] > 255 || cmyk[3] < 0){
-        notif("cmyk");
+        alert('cmyk out of the borders');
+        return false;
       }
+      return true;
     }
 
     function colorizeVia(mode) {
@@ -63,8 +62,8 @@ h1{position:relative;top:-50px;font-family:"Helvetica Neue";margin-bottom:-40px;
               inputb   = parseInt(document.getElementById('lab-b').value),
               labinput = [inputl, inputa, inputb],
               lab = labinput;
-              xyz = colorconv.LAB2XYZ(lab);
-              rgb = colorconv.XYZ2RGB(xyz);
+              rgb = colorconv.LAB2RGB(lab);
+              xyz = colorconv.RGB2XYZ(rgb);
               cmyk = colorconv.RGB2CMYK(rgb);
           break;
         case 'lab-text':
@@ -128,56 +127,58 @@ h1{position:relative;top:-50px;font-family:"Helvetica Neue";margin-bottom:-40px;
           break;
       }
 
-      checkValues(lab, xyz, cmyk);
+      val = checkValues(lab, xyz, cmyk);
 
-      var rgbcss = 'rgb('+rgb[0]+', '+rgb[1]+', '+rgb[2]+')',
-          labcss = 'lab('+lab[0]+', '+lab[1]+', '+lab[2]+')',
-          xyzcss = 'xyz('+xyz[0]+', '+xyz[1]+', '+xyz[2]+')',
-          cmykcss = 'cmyk('+cmyk[0]+', '+cmyk[1]+', '+cmyk[2]+cmyk[3]+')';
+      if(val == true) {
+        var rgbcss = 'rgb('+rgb[0]+', '+rgb[1]+', '+rgb[2]+')',
+            labcss = 'lab('+lab[0]+', '+lab[1]+', '+lab[2]+')',
+            xyzcss = 'xyz('+xyz[0]+', '+xyz[1]+', '+xyz[2]+')',
+            cmykcss = 'cmyk('+cmyk[0]+', '+cmyk[1]+', '+cmyk[2]+cmyk[3]+')';
 
-      document.getElementById('rgb-r').value = parseInt(rgb[0]);
-      document.getElementById('rgb-text-r').value = parseInt(rgb[0]);
-      document.getElementById('rgb-g').value = parseInt(rgb[1]);
-      document.getElementById('rgb-text-g').value = parseInt(rgb[1]);
-      document.getElementById('rgb-b').value = parseInt(rgb[2]);
-      document.getElementById('rgb-text-b').value = parseInt(rgb[2]);
-      
-      document.getElementById('lab-l').value = parseInt(lab[0]);
-      document.getElementById('lab-text-l').value = parseInt(lab[0]);
-      document.getElementById('lab-a').value = parseInt(lab[1]);
-      document.getElementById('lab-text-a').value = parseInt(lab[1]);
-      document.getElementById('lab-b').value = parseInt(lab[2]);
-      document.getElementById('lab-text-b').value = parseInt(lab[2]);
+        document.getElementById('rgb-r').value = parseInt(rgb[0]);
+        document.getElementById('rgb-text-r').value = parseInt(rgb[0]);
+        document.getElementById('rgb-g').value = parseInt(rgb[1]);
+        document.getElementById('rgb-text-g').value = parseInt(rgb[1]);
+        document.getElementById('rgb-b').value = parseInt(rgb[2]);
+        document.getElementById('rgb-text-b').value = parseInt(rgb[2]);
+        
+        document.getElementById('lab-l').value = parseInt(lab[0]);
+        document.getElementById('lab-text-l').value = parseInt(lab[0]);
+        document.getElementById('lab-a').value = parseInt(lab[1]);
+        document.getElementById('lab-text-a').value = parseInt(lab[1]);
+        document.getElementById('lab-b').value = parseInt(lab[2]);
+        document.getElementById('lab-text-b').value = parseInt(lab[2]);
 
-      document.getElementById('xyz-x').value = parseFloat(xyz[0]).toFixed(2);
-      document.getElementById('xyz-text-x').value = parseFloat(xyz[0]).toFixed(2);
-      document.getElementById('xyz-y').value = parseFloat(xyz[1]).toFixed(2);
-      document.getElementById('xyz-text-y').value = parseFloat(xyz[1]).toFixed(2);
-      document.getElementById('xyz-z').value = parseFloat(xyz[2]).toFixed(2);
-      document.getElementById('xyz-text-z').value = parseFloat(xyz[2]).toFixed(2);
+        document.getElementById('xyz-x').value = parseFloat(xyz[0]).toFixed(2);
+        document.getElementById('xyz-text-x').value = parseFloat(xyz[0]).toFixed(2);
+        document.getElementById('xyz-y').value = parseFloat(xyz[1]).toFixed(2);
+        document.getElementById('xyz-text-y').value = parseFloat(xyz[1]).toFixed(2);
+        document.getElementById('xyz-z').value = parseFloat(xyz[2]).toFixed(2);
+        document.getElementById('xyz-text-z').value = parseFloat(xyz[2]).toFixed(2);
 
-      document.getElementById('cmyk-c').value = parseInt(cmyk[0]);
-      document.getElementById('cmyk-test-c').value = parseInt(cmyk[0]);
-      document.getElementById('cmyk-m').value = parseInt(cmyk[1]);
-      document.getElementById('cmyk-test-m').value = parseInt(cmyk[1]);
-      document.getElementById('cmyk-y').value = parseInt(cmyk[2]);
-      document.getElementById('cmyk-test-y').value = parseInt(cmyk[2]);
-      document.getElementById('cmyk-k').value = parseInt(cmyk[3]);
-      document.getElementById('cmyk-test-k').value = parseInt(cmyk[3]);
-      
-      document.getElementById('main').style.backgroundColor = rgbcss;
-      document.getElementById('color1').style.backgroundColor = rgbcss;
-      document.getElementById('color2').style.backgroundColor = labcss;
-      document.getElementById('color3').style.backgroundColor = xyzcss;
-      document.getElementById('color4').style.backgroundColor = cmykcss;
-      
-      if((Math.round((rgb[0]+rgb[1]+rgb[2])/3)<120)) {
-        document.getElementById('style').innerHTML = '.box{ color: #ffffff; text-shadow: 0px 0px 9px #000000; }';
-        document.body.className = 'dark';
-      } else {
-        document.getElementById('style').innerHTML = '.box{ color: #000000; text-shadow: 0px 0px 9px #ffffff; }';
-        document.body.className = 'light';
-      }
+        document.getElementById('cmyk-c').value = parseInt(cmyk[0]);
+        document.getElementById('cmyk-test-c').value = parseInt(cmyk[0]);
+        document.getElementById('cmyk-m').value = parseInt(cmyk[1]);
+        document.getElementById('cmyk-test-m').value = parseInt(cmyk[1]);
+        document.getElementById('cmyk-y').value = parseInt(cmyk[2]);
+        document.getElementById('cmyk-test-y').value = parseInt(cmyk[2]);
+        document.getElementById('cmyk-k').value = parseInt(cmyk[3]);
+        document.getElementById('cmyk-test-k').value = parseInt(cmyk[3]);
+        
+        document.getElementById('main').style.backgroundColor = rgbcss;
+        document.getElementById('color1').style.backgroundColor = rgbcss;
+        document.getElementById('color2').style.backgroundColor = labcss;
+        document.getElementById('color3').style.backgroundColor = xyzcss;
+        document.getElementById('color4').style.backgroundColor = cmykcss;
+        
+        if((Math.round((rgb[0]+rgb[1]+rgb[2])/3)<120)) {
+          document.getElementById('style').innerHTML = '.box{ color: #ffffff; text-shadow: 0px 0px 9px #000000; }';
+          document.body.className = 'dark';
+        } else {
+          document.getElementById('style').innerHTML = '.box{ color: #000000; text-shadow: 0px 0px 9px #ffffff; }';
+          document.body.className = 'light';
+        }
+    }
     }
   </script>
 </head>
@@ -231,6 +232,7 @@ h1{position:relative;top:-50px;font-family:"Helvetica Neue";margin-bottom:-40px;
     xyz = colorconv.RGB2XYZ(rgb);
     cmyk = colorconv.RGB2CMYK(rgb);
 
+    checkValues(lab, xyz, cmyk);
     var rgbcss = 'rgb('+rgb[0]+', '+rgb[1]+', '+rgb[2]+')',
           labcss = 'lab('+lab[0]+', '+lab[1]+', '+lab[2]+')',
           xyzcss = 'xyz('+xyz[0]+', '+xyz[1]+', '+xyz[2]+')',
