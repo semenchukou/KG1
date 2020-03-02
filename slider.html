@@ -18,6 +18,49 @@ h1{position:relative;top:-50px;font-family:"Helvetica Neue";margin-bottom:-40px;
       return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
+    function updateValues(rgb, lab, xyz, cmyk) {
+      var rgbcss = 'rgb('+rgb[0]+', '+rgb[1]+', '+rgb[2]+')',
+            labcss = 'lab('+lab[0]+', '+lab[1]+', '+lab[2]+')',
+            xyzcss = 'xyz('+xyz[0]+', '+xyz[1]+', '+xyz[2]+')',
+            cmykcss = 'cmyk('+cmyk[0]+', '+cmyk[1]+', '+cmyk[2]+cmyk[3]+')';
+
+        document.getElementById('lab-l').value = parseInt(lab[0]);
+        document.getElementById('lab-text-l').value = parseInt(lab[0]);
+        document.getElementById('lab-a').value = parseInt(lab[1]);
+        document.getElementById('lab-text-a').value = parseInt(lab[1]);
+        document.getElementById('lab-b').value = parseInt(lab[2]);
+        document.getElementById('lab-text-b').value = parseInt(lab[2]);
+
+        document.getElementById('xyz-x').value = parseFloat(xyz[0]).toFixed(2);
+        document.getElementById('xyz-text-x').value = parseFloat(xyz[0]).toFixed(2);
+        document.getElementById('xyz-y').value = parseFloat(xyz[1]).toFixed(2);
+        document.getElementById('xyz-text-y').value = parseFloat(xyz[1]).toFixed(2);
+        document.getElementById('xyz-z').value = parseFloat(xyz[2]).toFixed(2);
+        document.getElementById('xyz-text-z').value = parseFloat(xyz[2]).toFixed(2);
+
+        document.getElementById('cmyk-c').value = parseInt(cmyk[0]);
+        document.getElementById('cmyk-test-c').value = parseInt(cmyk[0]);
+        document.getElementById('cmyk-m').value = parseInt(cmyk[1]);
+        document.getElementById('cmyk-test-m').value = parseInt(cmyk[1]);
+        document.getElementById('cmyk-y').value = parseInt(cmyk[2]);
+        document.getElementById('cmyk-test-y').value = parseInt(cmyk[2]);
+        document.getElementById('cmyk-k').value = parseInt(cmyk[3]);
+        document.getElementById('cmyk-test-k').value = parseInt(cmyk[3]);
+        
+        document.getElementById('main').style.backgroundColor = rgbcss;
+        document.getElementById('color2').style.backgroundColor = labcss;
+        document.getElementById('color3').style.backgroundColor = xyzcss;
+        document.getElementById('color4').style.backgroundColor = cmykcss;
+        
+        if((Math.round((rgb[0]+rgb[1]+rgb[2])/3)<120)) {
+          document.getElementById('style').innerHTML = '.box{ color: #ffffff; text-shadow: 0px 0px 9px #000000; }';
+          document.body.className = 'dark';
+        } else {
+          document.getElementById('style').innerHTML = '.box{ color: #000000; text-shadow: 0px 0px 9px #ffffff; }';
+          document.body.className = 'light';
+        }
+    }
+
     function checkValues(lab, xyz, cmyk){
       if(lab[0] > 100 || lab[0] < 0 || lab[1] > 127 || lab[1] < -128 || lab[2] > 127 || lab[2] < -128){
         alert('lab out of the borders');
@@ -27,7 +70,7 @@ h1{position:relative;top:-50px;font-family:"Helvetica Neue";margin-bottom:-40px;
         alert('xyz out of the borders');
         return false;
       }
-      if(cmyk[0] > 255 || cmyk[0] < 0 || cmyk[1] > 255 || cmyk[1] < 0 || cmyk[2] > 255 || cmyk[2] < 0 || cmyk[3] > 255 || cmyk[3] < 0){
+      if(cmyk[0] > 100 || cmyk[0] < 0 || cmyk[1] > 100 || cmyk[1] < 0 || cmyk[2] > 100 || cmyk[2] < 0 || cmyk[3] > 100 || cmyk[3] < 0){
         alert('cmyk out of the borders');
         return false;
       }
@@ -36,26 +79,6 @@ h1{position:relative;top:-50px;font-family:"Helvetica Neue";margin-bottom:-40px;
 
     function colorizeVia(mode) {
       switch(mode) {
-        case 'rgb':
-          var inputr   = document.getElementById('rgb-r').value,
-              inputg   = document.getElementById('rgb-g').value,
-              inputb   = document.getElementById('rgb-b').value,
-              rgbinput = [inputr, inputg, inputb],
-              rgb = rgbinput;
-              lab = colorconv.XYZ2LAB(colorconv.RGB2XYZ(rgb));
-              xyz = colorconv.RGB2XYZ(rgb);
-              cmyk = colorconv.RGB2CMYK(rgb);
-          break;
-        case 'rgb-text':
-          var inputr   = parseInt(document.getElementById('rgb-text-r').value),
-              inputg   = parseInt(document.getElementById('rgb-text-g').value),
-              inputb   = parseInt(document.getElementById('rgb-text-b').value),
-              rgbinput = [inputr, inputg, inputb],
-              rgb = rgbinput;
-              xyz = colorconv.RGB2XYZ(rgb);
-              lab = colorconv.XYZ2LAB(xyz);
-              cmyk = colorconv.RGB2CMYK(rgb);
-          break;
         case 'lab':
           var inputl   = parseInt(document.getElementById('lab-l').value),
               inputa   = parseInt(document.getElementById('lab-a').value),
@@ -130,71 +153,16 @@ h1{position:relative;top:-50px;font-family:"Helvetica Neue";margin-bottom:-40px;
       val = checkValues(lab, xyz, cmyk);
 
       if(val == true) {
-        var rgbcss = 'rgb('+rgb[0]+', '+rgb[1]+', '+rgb[2]+')',
-            labcss = 'lab('+lab[0]+', '+lab[1]+', '+lab[2]+')',
-            xyzcss = 'xyz('+xyz[0]+', '+xyz[1]+', '+xyz[2]+')',
-            cmykcss = 'cmyk('+cmyk[0]+', '+cmyk[1]+', '+cmyk[2]+cmyk[3]+')';
-
-        document.getElementById('rgb-r').value = parseInt(rgb[0]);
-        document.getElementById('rgb-text-r').value = parseInt(rgb[0]);
-        document.getElementById('rgb-g').value = parseInt(rgb[1]);
-        document.getElementById('rgb-text-g').value = parseInt(rgb[1]);
-        document.getElementById('rgb-b').value = parseInt(rgb[2]);
-        document.getElementById('rgb-text-b').value = parseInt(rgb[2]);
-        
-        document.getElementById('lab-l').value = parseInt(lab[0]);
-        document.getElementById('lab-text-l').value = parseInt(lab[0]);
-        document.getElementById('lab-a').value = parseInt(lab[1]);
-        document.getElementById('lab-text-a').value = parseInt(lab[1]);
-        document.getElementById('lab-b').value = parseInt(lab[2]);
-        document.getElementById('lab-text-b').value = parseInt(lab[2]);
-
-        document.getElementById('xyz-x').value = parseFloat(xyz[0]).toFixed(2);
-        document.getElementById('xyz-text-x').value = parseFloat(xyz[0]).toFixed(2);
-        document.getElementById('xyz-y').value = parseFloat(xyz[1]).toFixed(2);
-        document.getElementById('xyz-text-y').value = parseFloat(xyz[1]).toFixed(2);
-        document.getElementById('xyz-z').value = parseFloat(xyz[2]).toFixed(2);
-        document.getElementById('xyz-text-z').value = parseFloat(xyz[2]).toFixed(2);
-
-        document.getElementById('cmyk-c').value = parseInt(cmyk[0]);
-        document.getElementById('cmyk-test-c').value = parseInt(cmyk[0]);
-        document.getElementById('cmyk-m').value = parseInt(cmyk[1]);
-        document.getElementById('cmyk-test-m').value = parseInt(cmyk[1]);
-        document.getElementById('cmyk-y').value = parseInt(cmyk[2]);
-        document.getElementById('cmyk-test-y').value = parseInt(cmyk[2]);
-        document.getElementById('cmyk-k').value = parseInt(cmyk[3]);
-        document.getElementById('cmyk-test-k').value = parseInt(cmyk[3]);
-        
-        document.getElementById('main').style.backgroundColor = rgbcss;
-        document.getElementById('color1').style.backgroundColor = rgbcss;
-        document.getElementById('color2').style.backgroundColor = labcss;
-        document.getElementById('color3').style.backgroundColor = xyzcss;
-        document.getElementById('color4').style.backgroundColor = cmykcss;
-        
-        if((Math.round((rgb[0]+rgb[1]+rgb[2])/3)<120)) {
-          document.getElementById('style').innerHTML = '.box{ color: #ffffff; text-shadow: 0px 0px 9px #000000; }';
-          document.body.className = 'dark';
-        } else {
-          document.getElementById('style').innerHTML = '.box{ color: #000000; text-shadow: 0px 0px 9px #ffffff; }';
-          document.body.className = 'light';
-        }
+        updateValues(rgb, lab, xyz, cmyk);
     }
     }
   </script>
 </head>
-<body onload="colorizeVia('rgb');">
+<body onload="colorizeVia('lab');">
   <div id="main">
     <h1>ColorConverter</h1>
     <div>
       <button id="picker">picker</button>
-    </div>
-    <div id="color1" class="box">
-      <div><label for="rgb-r">R</label><input id="rgb-r" oninput="colorizeVia('rgb');" name="rgb-r" type="range" max="255" min="0" /></div>
-      <div><input id="rgb-text-r" type="number" oninput="colorizeVia('rgb-text');" name="rgb-text-r" max="255" min="0" style="text-align:center;"></div>
-      <div><label for="rgb-g">G</label><input id="rgb-g" oninput="colorizeVia('rgb');" name="rgb-g" type="range" max="255" min="0" /></div>
-      <div><input id="rgb-text-g" type="number" oninput="colorizeVia('rgb-text');" name="rgb-text-g" max="255" min="0" style="text-align:center;"></div>
-      <div><label for="rgb-b">B</label><input id="rgb-b" oninput="colorizeVia('rgb');" name="rgb-b" type="range" max="255" min="0" /></div>
-      <div><input id="rgb-text-b" type="number" oninput="colorizeVia('rgb-text');" name="rgb-text-b" max="255" min="0" style="text-align:center;"></div>
     </div>
     <div id="color2" class="box">
       <div><label for="lab-l">L</label><input id="lab-l" oninput="colorizeVia('lab');" name="lab-l" type="range" max="100" min="0" /></div>
@@ -213,14 +181,14 @@ h1{position:relative;top:-50px;font-family:"Helvetica Neue";margin-bottom:-40px;
       <div><input id="xyz-text-z" type="number" oninput=="colorizeVia('xyz-text');" name="xyz-text-z" max="0.8252" step="0.01" min="0" style="text-align:center;"></div>
     </div>
     <div id="color4" class="box">
-      <div><label for="cmyk-c">С</label><input id="cmyk-c" oninput="colorizeVia('cmyk');" name="cmyk-c" type="range" max="255" min="0" /></div>
-      <div><input id="cmyk-test-c" type="number" oninput="colorizeVia('cmyk-text');" name="cmyk-text-c" max="255" min="0" step="1" style="text-align:center;"></div>
-      <div><label for="cmyk-m">M</label><input id="cmyk-m" oninput="colorizeVia('cmyk');" name="cmyk-m" type="range" max="255" min="0" /></div>
-      <div><input id="cmyk-test-m" type="number" oninput="colorizeVia('cmyk-text');" name="cmyk-text-m" max="255" min="0" step="1 style="text-align:center;"></div>
-      <div><label for="cmyk-y">Y</label><input id="cmyk-y" oninput="colorizeVia('cmyk');" name="cmyk-y" type="range" max="255" min="0" /></div>
-      <div><input id="cmyk-test-y" type="number" oninput="colorizeVia('cmyk-text');" name="cmyk-test-y" max="255" min="0" step="1 style="text-align:center;"></div>
-      <div><label for="cmyk-k">K</label><input id="cmyk-k" oninput="colorizeVia('cmyk');" name="cmyk-k" type="range" max="255" min="0" /></div>
-      <div><input id="cmyk-test-k" type="number" oninput="colorizeVia('cmyk-text');" name="cmyk-test-k" max="255" min="0" step="1 style="text-align:center;"></div>
+      <div><label for="cmyk-c">С</label><input id="cmyk-c" oninput="colorizeVia('cmyk');" name="cmyk-c" type="range" max="100" min="0" /></div>
+      <div><input id="cmyk-test-c" type="number" oninput="colorizeVia('cmyk-text');" name="cmyk-text-c" max="100" min="0" step="1" style="text-align:center;"></div>
+      <div><label for="cmyk-m">M</label><input id="cmyk-m" oninput="colorizeVia('cmyk');" name="cmyk-m" type="range" max="100" min="0" /></div>
+      <div><input id="cmyk-test-m" type="number" oninput="colorizeVia('cmyk-text');" name="cmyk-text-m" max="100" min="0" step="1 style="text-align:center;"></div>
+      <div><label for="cmyk-y">Y</label><input id="cmyk-y" oninput="colorizeVia('cmyk');" name="cmyk-y" type="range" max="100" min="0" /></div>
+      <div><input id="cmyk-test-y" type="number" oninput="colorizeVia('cmyk-text');" name="cmyk-test-y" max="100" min="0" step="1 style="text-align:center;"></div>
+      <div><label for="cmyk-k">K</label><input id="cmyk-k" oninput="colorizeVia('cmyk');" name="cmyk-k" type="range" max="100" min="0" /></div>
+      <div><input id="cmyk-test-k" type="number" oninput="colorizeVia('cmyk-text');" name="cmyk-test-k" max="100" min="0" step="1 style="text-align:center;"></div>
     </div>
   </div>
 </body>
@@ -232,47 +200,10 @@ h1{position:relative;top:-50px;font-family:"Helvetica Neue";margin-bottom:-40px;
     xyz = colorconv.RGB2XYZ(rgb);
     cmyk = colorconv.RGB2CMYK(rgb);
 
-    checkValues(lab, xyz, cmyk);
-    var rgbcss = 'rgb('+rgb[0]+', '+rgb[1]+', '+rgb[2]+')',
-          labcss = 'lab('+lab[0]+', '+lab[1]+', '+lab[2]+')',
-          xyzcss = 'xyz('+xyz[0]+', '+xyz[1]+', '+xyz[2]+')',
-          cmykcss = 'cmyk('+cmyk[0]+', '+cmyk[1]+', '+cmyk[2]+cmyk[3]+')';
-
-    document.getElementById('rgb-r').value = parseInt(rgb[0]);
-    document.getElementById('rgb-text-r').value = parseInt(rgb[0]);
-    document.getElementById('rgb-g').value = parseInt(rgb[1]);
-    document.getElementById('rgb-text-g').value = parseInt(rgb[1]);
-    document.getElementById('rgb-b').value = parseInt(rgb[2]);
-    document.getElementById('rgb-text-b').value = parseInt(rgb[2]);
-      
-    document.getElementById('lab-l').value = parseInt(lab[0]);
-    document.getElementById('lab-text-l').value = parseInt(lab[0]);
-    document.getElementById('lab-a').value = parseInt(lab[1]);
-    document.getElementById('lab-text-a').value = parseInt(lab[1]);
-    document.getElementById('lab-b').value = parseInt(lab[2]);
-    document.getElementById('lab-text-b').value = parseInt(lab[2]);
-
-    document.getElementById('xyz-x').value = parseFloat(xyz[0]).toFixed(2);
-    document.getElementById('xyz-text-x').value = parseFloat(xyz[0]).toFixed(2);
-    document.getElementById('xyz-y').value = parseFloat(xyz[1]).toFixed(2);
-    document.getElementById('xyz-text-y').value = parseFloat(xyz[1]).toFixed(2);
-    document.getElementById('xyz-z').value = parseFloat(xyz[2]).toFixed(2);
-    document.getElementById('xyz-text-z').value = parseFloat(xyz[2]).toFixed(2);
-
-    document.getElementById('cmyk-c').value = parseInt(cmyk[0]);
-    document.getElementById('cmyk-test-c').value = parseInt(cmyk[0]);
-    document.getElementById('cmyk-m').value = parseInt(cmyk[1]);
-    document.getElementById('cmyk-test-m').value = parseInt(cmyk[1]);
-    document.getElementById('cmyk-y').value = parseInt(cmyk[2]);
-    document.getElementById('cmyk-test-y').value = parseInt(cmyk[2]);
-    document.getElementById('cmyk-k').value = parseInt(cmyk[3]);
-    document.getElementById('cmyk-test-k').value = parseInt(cmyk[3]);
-      
-    document.getElementById('main').style.backgroundColor = rgbcss;
-    document.getElementById('color1').style.backgroundColor = rgbcss;
-    document.getElementById('color2').style.backgroundColor = labcss;
-    document.getElementById('color3').style.backgroundColor = xyzcss;
-    document.getElementById('color4').style.backgroundColor = cmykcss;
+    val = checkValues(lab, xyz, cmyk);
+    if(val == true) {
+        updateValues(rgb, lab, xyz, cmyk);
+    }
   });
 </script>
 </html>

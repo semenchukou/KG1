@@ -1,35 +1,30 @@
 var colorconv = {
     RGB2CMYK : function (RGB) {
       "use strict";
-      var red = Math.max(Math.min(parseInt(RGB[0], 10), 255), 0),
-        green = Math.max(Math.min(parseInt(RGB[1], 10), 255), 0),
-        blue = Math.max(Math.min(parseInt(RGB[2], 10), 255), 0),
-        cyan = 1 - red,
-        magenta = 1 - green,
-        yellow = 1 - blue,
-        black = 1;
-  
-      if (red || green || blue) {
-        black = Math.min(cyan, Math.min(magenta, yellow));
-        cyan = (cyan - black) / (1 - black);
-        magenta = (magenta - black) / (1 - black);
-        yellow = (yellow - black) / (1 - black);
-      } else {
-        black = 1;
-      }
-      return [Math.round(cyan * 255), Math.round(magenta * 255), Math.round(yellow * 255), Math.round(black + 254)];
+      var r = RGB[0],
+          g = RGB[1],
+          b = RGB[2],
+          c, m, y, k;
+
+      k = Math.min(1 - r/255, 1 - g/255, 1 - b /255);
+      c = (1 - r/255 - k) * (1 - k);
+      m = (1 - g/255 - k) * (1 - k);
+      y = (1 - b/255 - k) * (1 - k);
+      return [c * 100, m * 100, y * 100, k * 100];
     },
+
     CMYK2RGB : function (CMYK) {
       "use strict";
-      var cyan = Math.max(Math.min(parseInt(CMYK[0], 10) / 255, 1), 0),
-        magenta = Math.max(Math.min(parseInt(CMYK[1], 10) / 255, 1), 0),
-        yellow = Math.max(Math.min(parseInt(CMYK[2], 10) / 255, 1), 0),
-        black = Math.max(Math.min(parseInt(CMYK[3], 10) / 255, 1), 0),
-        red = (1 - cyan * (1 - black) - black),
-        green = (1 - magenta * (1 - black) - black),
-        blue = (1 - yellow * (1 - black) - black);
-  
-      return [Math.round(red * 255), Math.round(green * 255), Math.round(blue * 255)];
+      var c = CMYK[0] / 100,
+          m = CMYK[1] / 100,
+          y = CMYK[2] / 100,
+          k = CMYK[3] / 100,
+          r, g, b;
+
+      r = 255 * (1 - c) * (1 - k);
+      g = 255 * (1 - m) * (1 - k);
+      b = 255 * (1 - y) * (1 - k);
+      return [r, g, b];
     },
 
     RGB2XYZ : function(rgb) {
